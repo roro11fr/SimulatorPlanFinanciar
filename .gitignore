@@ -1,0 +1,6 @@
+/env
+
+**/local_settings.py
+
+/staticfiles/
+/media/
