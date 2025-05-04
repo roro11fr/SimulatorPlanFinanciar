@@ -56,7 +56,7 @@ ROOT_URLCONF = 'fin_sim.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,5 +121,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/profil/'     # Redirect după login
-LOGOUT_REDIRECT_URL = '/accounts/login/'  # Redirect după logout
+# LOGIN_REDIRECT_URL = '/profil/'     # Redirect după login
+# LOGOUT_REDIRECT_URL = 'login'  # Redirect după logout

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Planurile tale financiare</h2>
+        <a href="{% url 'create_investment_plan' %}" class="btn btn-success">Creează Plan Nou</a>
+    </div>
+
+    {% if investment_plans %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">Nume</th>
+                        <th class="text-center">Tip</th>
+                        <th class="text-center">Frecvență</th>
+                        <th class="text-center">Investiție Inițială</th>
+                        <th class="text-center">Contribuție</th>
+                        <th class="text-center">Risc</th>
+                        <th class="text-center">Randament Estimat</th>
+                        <th class="text-center">Perioadă</th>
+                        <th class="text-center">Monedă</th>
+                        <th class="text-center">Acțiuni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in investment_plans %}
+                        <tr>
+                            <td class="text-center">{{ plan.name }}</td>
+                            <td class="text-center">{{ plan.get_plan_type_display }}</td>
+                            <td class="text-center">{{ plan.get_payment_frequency_display }}</td>
+                            <td class="text-center">{{ plan.initial_investment }} {{ plan.currency }}</td>
+                            <td class="text-center">{{ plan.monthly_contribution }} {{ plan.currency }}</td>
+                            <td class="text-center">{{ plan.risk_level }}</td>
+                            <td class="text-center">{{ plan.start_date }} - {{ plan.end_date }}</td>
+                            <td class="text-center">{{ plan.currency }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'edit_investment_plan' plan.id %}" class="btn btn-info btn-sm">Editează</a>
+                                <a href="{% url 'delete_investment_plan' plan.id %}" class="btn btn-danger btn-sm ml-2">Șterge</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-center">Nu ai niciun plan de investiții creat. <a href="{% url 'create_investment_plan' %}">Creează unul acum!</a></p>
+    {% endif %}
+</div>
+{% endblock %}

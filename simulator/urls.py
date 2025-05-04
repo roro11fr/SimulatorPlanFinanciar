@@ -1,12 +1,15 @@
 from django.urls import path
-from . import views
-from django.http import HttpResponse
-from django.contrib.auth import views as auth_views
-
-
+from .views import dashboard, investment_plan, auth
 urlpatterns = [
-    path('', auth_views.LoginView.as_view(), name='login'),
-    path('profil/', views.create_profile, name='create_profile'),
-    path('success/', lambda r: HttpResponse("Profil salvat!"), name='success'),
-    path('register/', views.register, name='register'),  # Ruta de înregistrare
+    path('', dashboard.dashboard_view, name='dashboard'),
+    
+    # Autentificare și înregistrare
+    path('login/', auth.login_view, name='login'),
+    path('logout/', auth.logout_view, name='logout'),
+    path('register/', auth.register_view, name='register'),
+    # Investment Plan
+    path('create_investment_plan/', investment_plan.create_investment_plan, name='create_investment_plan'),
+    path('plan/<int:plan_id>/edit/', investment_plan.edit_investment_plan, name='edit_investment_plan'),
+    path('plan/<int:plan_id>/delete/', investment_plan.delete_investment_plan, name='delete_investment_plan'),
+
 ]
