@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Creare Plan de Investiții{% endblock %}
+{% block title %}Creare Plan de Investitii{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Creare Plan de Investiții</h2>
+    <h2 class="text-center mb-4">Creare Plan de Investitii</h2>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}

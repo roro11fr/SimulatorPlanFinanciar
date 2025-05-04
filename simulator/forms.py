@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import InvestmentPlan
+from .models import InvestmentPlan, Simulation
 from django.core.exceptions import ValidationError
 
 
@@ -29,9 +29,9 @@ class InvestmentPlanForm(forms.ModelForm):
         labels = {
             'name': 'Numele Planului',
             'plan_type': 'Tipul Planului',
-            'payment_frequency': 'Frecvența Contribuțiilor',
-            'initial_investment': 'Investiție Inițială',
-            'monthly_contribution': 'Contribuție lunară',
+            'payment_frequency': 'Frecventa Contributiilor',
+            'initial_investment': 'Investitie Initială',
+            'monthly_contribution': 'Contributie lunară',
             'risk_level': 'Nivel de risc',
             'currency': 'Monedă',
             'start_date': 'Data Începerii',
@@ -53,3 +53,9 @@ class InvestmentPlanForm(forms.ModelForm):
         if start and end and start >= end:
             raise ValidationError("Data finalizării trebuie să fie după data începerii.")
         return cleaned_data
+    
+
+class SimulationForm(forms.ModelForm):
+    class Meta:
+        model = Simulation
+        fields = ['initial_investment', 'risk_level', 'years', 'simulations_run']

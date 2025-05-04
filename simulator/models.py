@@ -38,3 +38,19 @@ class InvestmentPlan(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.user.username}"
+
+
+class Simulation(models.Model):
+    investment_plan = models.ForeignKey(InvestmentPlan, on_delete=models.CASCADE, related_name="simulations")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    initial_investment = models.DecimalField(max_digits=12, decimal_places=2)
+    risk_level = models.CharField(max_length=10)
+    years = models.PositiveIntegerField()
+    simulations_run = models.PositiveIntegerField(default=500)
+
+    result_image_path = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Simulare #{self.id} - {self.user.username} ({self.created_at.date()})"

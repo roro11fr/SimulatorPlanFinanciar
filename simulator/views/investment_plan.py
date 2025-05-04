@@ -13,7 +13,7 @@ def create_investment_plan(request):
             plan = form.save(commit=False)
             plan.user = request.user  # Asociem planul cu utilizatorul curent
             plan.save()
-            return redirect('dashboard')  # După salvare, redirecționăm la dashboard
+            return redirect('dashboard')  # După salvare, redirectionăm la dashboard
     else:
         form = InvestmentPlanForm()
     return render(request, 'simulator/create_investment_plan.html', {'form': form})

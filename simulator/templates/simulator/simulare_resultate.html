@@ -1,0 +1,32 @@
+<h2>Rezultat Simulare</h2>
+
+<p><strong>Data:</strong> {{ simulare.created_at }}</p>
+<p><strong>Investitie:</strong> {{ simulare.initial_investment }}</p>
+<p><strong>Risc:</strong> {{ simulare.risk_level }}</p>
+<p><strong>Ani:</strong> {{ simulare.years }}</p>
+
+{% load static %}
+<img src="/media/{{ simulare.result_image_path }}" alt="Grafic simulare">
+
+<a href="{% url 'istoric_simulari' %}">Vezi istoricul</a>
+<a href="{% url 'dashboard' %}">Înapoi la dashboard</a>
+
+{% if simulare.result_data %}
+    <h3>Date Rezultate</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Perioadă</th>
+                <th>Valoare Finală</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in simulare.result_data %}
+                <tr>
+                    <td>{{ data.period }}</td>
+                    <td>{{ data.final_value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

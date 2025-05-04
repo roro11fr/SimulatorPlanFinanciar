@@ -16,14 +16,14 @@
                     <tr>
                         <th class="text-center">Nume</th>
                         <th class="text-center">Tip</th>
-                        <th class="text-center">Frecvență</th>
-                        <th class="text-center">Investiție Inițială</th>
-                        <th class="text-center">Contribuție</th>
+                        <th class="text-center">Frecventă</th>
+                        <th class="text-center">Investitie Initială</th>
+                        <th class="text-center">Contributie</th>
                         <th class="text-center">Risc</th>
                         <th class="text-center">Randament Estimat</th>
                         <th class="text-center">Perioadă</th>
                         <th class="text-center">Monedă</th>
-                        <th class="text-center">Acțiuni</th>
+                        <th class="text-center">Actiuni</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,6 +40,7 @@
                             <td class="text-center">
                                 <a href="{% url 'edit_investment_plan' plan.id %}" class="btn btn-info btn-sm">Editează</a>
                                 <a href="{% url 'delete_investment_plan' plan.id %}" class="btn btn-danger btn-sm ml-2">Șterge</a>
+                                <a href="{% url 'start_simulation' plan.id %}" class="btn btn-primary">Simulează</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -47,7 +48,7 @@
             </table>
         </div>
     {% else %}
-        <p class="text-center">Nu ai niciun plan de investiții creat. <a href="{% url 'create_investment_plan' %}">Creează unul acum!</a></p>
+        <p class="text-center">Nu ai niciun plan de investitii creat. <a href="{% url 'create_investment_plan' %}">Creează unul acum!</a></p>
     {% endif %}
 </div>
 {% endblock %}
