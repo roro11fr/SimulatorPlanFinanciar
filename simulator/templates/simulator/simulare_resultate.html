@@ -1,32 +1,103 @@
+{% load static %}
+{% load simulator_extras %}
+
 <h2>Rezultat Simulare</h2>
 
 <p><strong>Data:</strong> {{ simulare.created_at }}</p>
-<p><strong>Investitie:</strong> {{ simulare.initial_investment }}</p>
+<p><strong>Investiție inițială:</strong> {{ simulare.initial_investment }} RON</p>
+
+{% if simulare.investment_plan.monthly_contribution %}
+<p><strong>Contribuții lunare:</strong> {{ simulare.investment_plan.monthly_contribution }} RON</p>
+{% endif %}
+
 <p><strong>Risc:</strong> {{ simulare.risk_level }}</p>
 <p><strong>Ani:</strong> {{ simulare.years }}</p>
 
-{% load static %}
-<img src="/media/{{ simulare.result_image_path }}" alt="Grafic simulare">
+<!-- Afișează doar cardul asociat cu nivelul de risc -->
+<div class="row mt-4 mb-4">
+  {% if simulare.risk_level == "low" %}
+    <div class="col-md-12">
+      <div class="card border-success">
+        <div class="card-body">
+          <h5 class="card-title">
+            🟢 Risc Scăzut
+          </h5>
+          <p class="card-text">
+            Portofoliu conservator, concentrat pe stabilitate și siguranță.
+            Randamente mai mici dar constante, ideal pentru investiții pe termen lung cu focus pe păstrarea capitalului.
+          </p>
+        </div>
+      </div>
+    </div>
+  {% elif simulare.risk_level == "medium" %}
+    <div class="col-md-12">
+      <div class="card border-warning">
+        <div class="card-body">
+          <h5 class="card-title">
+            🔵 Risc Mediu
+          </h5>
+          <p class="card-text">
+            Echilibru între risc și randament. Portofoliu diversificat care combină stabilitatea cu oportunități de creștere. Ideal pentru investitori care caută creștere moderată.
+          </p>
+        </div>
+      </div>
+    </div>
+  {% elif simulare.risk_level == "high" %}
+    <div class="col-md-12">
+      <div class="card border-danger">
+        <div class="card-body">
+          <h5 class="card-title">
+            🔴 Risc Ridicat
+          </h5>
+          <p class="card-text">
+            Strategie agresivă, concentrată pe maximizarea randamentelor.
+            Volatilitate ridicată dar cu potențial de profit major. Recomandat pentru investitori cu toleranță mare la risc.
+          </p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
 
-<a href="{% url 'istoric_simulari' %}">Vezi istoricul</a>
-<a href="{% url 'dashboard' %}">Înapoi la dashboard</a>
+<hr>
+
+<div class="interactive-plot">
+  {{ chart_html|safe }}
+
+  <div class="mt-4" style="padding: 1rem; border: 1px solid #ccc; border-radius: 6px; background-color: #f9f9f9;">
+    <h4>📘 Cum să interpretezi graficul:</h4>
+    <ul style="list-style: disc; padding-left: 1.5rem;">
+      <li><strong>🔵 Linia albastră</strong> arată <u>valoarea medie</u> a portofoliului în 500 de simulări.</li>
+      <li><strong>🟩 Linia verde întreruptă</strong> arată <u>contribuțiile totale</u> investite lunar.</li>
+      <li><strong>🔷 Banda albastră deschisă</strong> arată intervalul în care se află 80% din simulări (10%–90%).</li>
+    </ul>
+    <p style="margin-top: 1rem;"><strong>ℹ️ Notă:</strong> Este normal ca portofoliul să fie uneori sub contribuții, mai ales în condiții de risc și volatilitate.</p>
+  </div>
+</div>
+
+<hr>
+
+<div class="mt-4">
+  <a href="{% url 'istoric_simulari' %}" class="btn btn-secondary">Vezi istoricul</a>
+  <a href="{% url 'dashboard' %}" class="btn btn-primary">Înapoi la dashboard</a>
+</div>
 
 {% if simulare.result_data %}
-    <h3>Date Rezultate</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Perioadă</th>
-                <th>Valoare Finală</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for data in simulare.result_data %}
-                <tr>
-                    <td>{{ data.period }}</td>
-                    <td>{{ data.final_value }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <h3>Date Rezultate</h3>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Perioadă</th>
+        <th>Valoare Finală</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for data in simulare.result_data %}
+        <tr>
+          <td>{{ data.period }}</td>
+          <td>{{ data.final_value }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endif %}

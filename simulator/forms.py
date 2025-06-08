@@ -24,7 +24,8 @@ class InvestmentPlanForm(forms.ModelForm):
         model = InvestmentPlan
         fields = [
             'name', 'plan_type', 'payment_frequency', 'initial_investment',
-            'monthly_contribution', 'risk_level', 'currency', 'start_date', 'end_date'
+            'monthly_contribution', 'risk_level', 'currency', 'start_date', 'end_date',
+            'monthly_expense', 'monthly_income'
         ]
         labels = {
             'name': 'Numele Planului',
@@ -36,6 +37,8 @@ class InvestmentPlanForm(forms.ModelForm):
             'currency': 'Monedă',
             'start_date': 'Data Începerii',
             'end_date': 'Data Finalizării',
+            'monthly_expense': 'Cheltuieli lunare',
+            'monthly_income': 'Venit lunar',
         }
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
@@ -50,8 +53,18 @@ class InvestmentPlanForm(forms.ModelForm):
         cleaned_data = super().clean()
         start = cleaned_data.get("start_date")
         end = cleaned_data.get("end_date")
+        monthly_contribution = cleaned_data.get("monthly_contribution")
+        monthly_income = cleaned_data.get("monthly_income")
+        monthly_expense = cleaned_data.get("monthly_expense")
+
         if start and end and start >= end:
             raise ValidationError("Data finalizării trebuie să fie după data începerii.")
+        
+        if monthly_contribution and monthly_income and monthly_expense:
+            available_income = monthly_income - monthly_expense
+            if monthly_contribution > available_income:
+                raise ValidationError("Contribuția lunară nu poate depăși venitul disponibil după cheltuieli.")
+        
         return cleaned_data
     
 

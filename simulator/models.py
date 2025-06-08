@@ -35,6 +35,8 @@ class InvestmentPlan(models.Model):
     currency = models.CharField(max_length=5, choices=CURRENCY_CHOICES, default='RON', verbose_name="Monedă")
     start_date = models.DateField(verbose_name="Data Începerii")
     end_date = models.DateField(verbose_name="Data Finalizării")
+    monthly_expense = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Cheltuieli lunare", default=0.00)
+    monthly_income = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Venit lunar", default=0.00)
 
     def __str__(self):
         return f"{self.name} - {self.user.username}"
