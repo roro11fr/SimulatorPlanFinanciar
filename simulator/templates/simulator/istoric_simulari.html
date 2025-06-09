@@ -1,14 +1,54 @@
-<h2>Istoric Simulări</h2>
+{% extends 'base.html' %}
 
-<ul>
-    {% for sim in simulari %}
-    <li>
-        {{ sim.created_at }} | {{ sim.initial_investment }} RON | {{ sim.risk_level }} |
-        <a href="{{ MEDIA_URL }}{{ sim.result_image_path }}" target="_blank">Grafic</a> |
-        <form action="{% url 'sterge_simulare' sim.id %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" onclick="return confirm('Sigur vrei să ștergi această simulare?');">Șterge</button>
-        </form>
-    </li>
-    {% endfor %}
-</ul>
+{% block title %}Dashboard Istoric Simulări{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-10 bg-white p-6 rounded shadow">
+  <h2 class="text-2xl font-bold text-blue-600 mb-6 text-center">
+    📊 Istoric Simulări pentru planul: <span class="text-gray-800">{{ plan.name }}</span>
+  </h2>
+
+  {% if simulari %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto text-sm text-gray-700 border border-gray-200 rounded">
+        <thead class="bg-blue-50 text-left text-gray-700 font-semibold">
+          <tr>
+            <th class="px-4 py-2 border-b">Data</th>
+            <th class="px-4 py-2 border-b">Investiție</th>
+            <th class="px-4 py-2 border-b">Risc</th>
+            <th class="px-4 py-2 border-b text-center">Grafic</th>
+            <th class="px-4 py-2 border-b text-center">Acțiuni</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sim in simulari %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2 border-b">{{ sim.created_at }}</td>
+              <td class="px-4 py-2 border-b">{{ sim.initial_investment }} RON</td>
+              <td class="px-4 py-2 border-b">
+                <span class="font-medium {% if sim.risk_level == 'low' %}text-green-700{% elif sim.risk_level == 'medium' %}text-yellow-700{% else %}text-red-700{% endif %}">
+                    {{sim.get_risk_level_display}}
+                </span>
+              </td>
+              <td class="px-4 py-2 border-b text-center">
+                <a href="{{ MEDIA_URL }}{{ simulare.result_image_path }}" target="_blank">📈 Vezi Graficul</a>
+              </td>
+              <td class="px-4 py-2 border-b text-center">
+                <form method="post" action="{% url 'sterge_simulare' sim.id %}" onsubmit="return confirm('Sigur vrei să ștergi această simulare?');">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition">
+                    🗑️ Șterge
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-gray-500 text-center">Nu există simulări salvate momentan.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -8,6 +8,7 @@ from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.conf import settings
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 from simulator.models import Simulation, InvestmentPlan
 from simulator.utils import get_historical_data
@@ -171,27 +172,34 @@ def start_simulation(request, plan_id):
     )
 
     return render(request, 'simulator/simulare_resultate.html', {
+        'plan': plan,
         'simulare': sim,
         'chart_html': chart_html
     })
 
 
-def istoric_simulari(request):
-    simulari = Simulation.objects.filter(user=request.user).order_by('-created_at')
+@login_required
+def istoric_simulari(request, plan_id):
+    plan = get_object_or_404(InvestmentPlan, id=plan_id, user=request.user)
+    simulari = Simulation.objects.filter(investment_plan=plan).order_by('-created_at')
+    
     return render(request, 'simulator/istoric_simulari.html', {
+        'plan': plan,
         'simulari': simulari,
         'MEDIA_URL': settings.MEDIA_URL,
     })
-
 
 @require_POST
 def sterge_simulare(request, simulare_id):
     simulare = get_object_or_404(Simulation, id=simulare_id, user=request.user)
 
+    # șterge fișierul grafic dacă există
     if simulare.result_image_path:
         image_path = os.path.join(settings.MEDIA_ROOT, simulare.result_image_path)
         if os.path.exists(image_path):
             os.remove(image_path)
 
+    plan_id = simulare.investment_plan.id
     simulare.delete()
-    return redirect('istoric_simulari')
+
+    return redirect('istoric_simulari', plan_id=plan_id)

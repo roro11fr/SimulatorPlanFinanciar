@@ -28,7 +28,7 @@ class InvestmentPlan(models.Model):
     user = models.ForeignKey(User, related_name="investment_plans", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, verbose_name="Numele Planului")
     plan_type = models.CharField(max_length=20, choices=PLAN_TYPE_CHOICES, default='investitii')
-    payment_frequency = models.CharField(max_length=20, choices=PAYMENT_FREQUENCY_CHOICES)
+    payment_frequency = models.CharField(max_length=20, default='monthly', choices=PAYMENT_FREQUENCY_CHOICES)
     initial_investment = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Investiție Inițială")
     monthly_contribution = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Contribuție lunară")
     risk_level = models.CharField(max_length=10, choices=RISK_LEVEL_CHOICES, default='low', verbose_name="Nivel de risc")
@@ -48,7 +48,7 @@ class Simulation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     initial_investment = models.DecimalField(max_digits=12, decimal_places=2)
-    risk_level = models.CharField(max_length=10)
+    risk_level = models.CharField(max_length=10, choices=InvestmentPlan.RISK_LEVEL_CHOICES, default='low', verbose_name="Nivel de risc")
     years = models.PositiveIntegerField()
     simulations_run = models.PositiveIntegerField(default=500)
 

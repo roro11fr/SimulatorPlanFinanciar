@@ -13,6 +13,6 @@ urlpatterns = [
     path('plan/<int:plan_id>/delete/', investment_plan.delete_investment_plan, name='delete_investment_plan'),
     #Simulation
     path('simulare/<int:plan_id>/', simulation.start_simulation, name='start_simulation'),
-    path('simulari/istoric/', simulation.istoric_simulari, name='istoric_simulari'),
+    path('plan/<int:plan_id>/simulari/', simulation.istoric_simulari, name='istoric_simulari'),
     path('simulare/sterge/<int:simulare_id>/', simulation.sterge_simulare, name='sterge_simulare'),
 ]
