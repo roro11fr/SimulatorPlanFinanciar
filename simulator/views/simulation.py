@@ -70,7 +70,7 @@ def monte_carlo_simulation_with_historical_data(
             current_contribution = annual_contribution * (1 + inflation) ** year
             current_income = annual_income * (1.02) ** year
 
-            cashflow = (current_income - current_expense - current_contribution)
+            # cashflow = (current_income - current_expense - current_contribution)
             shock = np.random.normal(mean_return, std_dev)
 
             # Aplicăm șocurile bazate pe probabilitate și nivelul de risc
@@ -82,7 +82,7 @@ def monte_carlo_simulation_with_historical_data(
                     shock = shock_neg
 
             # ✅ Actualizare valoare corectă
-            value = (value + current_contribution) * (1 + shock) + cashflow
+            value = (value + current_contribution) * (1 + shock)
             scenario.append(value)
 
         results.append(scenario)
