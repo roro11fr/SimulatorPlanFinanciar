@@ -1,0 +1,213 @@
+/* Simulare Tailwind CSS precompilat */
+
+.bg-white         { background-color: white; }
+.bg-gray-100      { background-color: #f7fafc; }
+.text-gray-800    { color: #2d3748; }
+.text-blue-600    { color: #3182ce; }
+.text-sm          { font-size: 0.875rem; }
+.text-xl          { font-size: 1.25rem; }
+.font-bold        { font-weight: 700; }
+
+.p-6              { padding: 1.5rem; }
+.p-4              { padding: 1rem; }
+.px-4             { padding-left: 1rem; padding-right: 1rem; }
+.px-3             { padding-left: 0.75rem; padding-right: 0.75rem; }
+.py-1             { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-6             { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+
+.mb-4             { margin-bottom: 1rem; }
+.mb-6             { margin-bottom: 1.5rem; }
+.mt-10            { margin-top: 2.5rem; }
+
+.rounded          { border-radius: 0.25rem; }
+.shadow           { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+.container        {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.flex             { display: flex; }
+.inline-flex      { display: inline-flex; }
+.items-center     { align-items: center; }
+.justify-between  { justify-content: space-between; }
+.justify-center   { justify-content: center; }
+
+.gap-1            { gap: 0.25rem; }
+.gap-2            { gap: 0.5rem; }
+.gap-4            { gap: 1rem; }
+.flex-wrap        { flex-wrap: wrap; }
+
+.ml-1             { margin-left: 0.25rem; }
+
+.text-white       { color: white; }
+.text-green-800   { color: #065f46; }
+.text-yellow-800  { color: #92400e; }
+.text-red-800     { color: #991b1b; }
+
+.bg-red-500       { background-color: #ef4444; }
+.bg-red-600       { background-color: #dc2626; }
+.bg-blue-600      { background-color: #2563eb; }
+.bg-indigo-500    { background-color: #6366f1; }
+.bg-indigo-600    { background-color: #4f46e5; }
+.bg-green-600     { background-color: #16a34a; }
+
+.bg-green-100     { background-color: #d1fae5; }
+.bg-yellow-100    { background-color: #fef3c7; }
+.bg-red-100       { background-color: #fee2e2; }
+
+.hover\:bg-blue-700:hover   { background-color: #1d4ed8; }
+.hover\:bg-red-600:hover    { background-color: #dc2626; }
+.hover\:bg-red-700:hover    { background-color: #b91c1c; }
+.hover\:bg-green-700:hover  { background-color: #15803d; }
+.hover\:bg-indigo-600:hover { background-color: #4f46e5; }
+
+.hover\:underline:hover { text-decoration: underline; }
+.no-underline { text-decoration: none; }
+.inline-block { display: inline-block; }
+.whitespace-nowrap { white-space: nowrap; }
+
+
+
+
+/* //edit */
+
+/* Stil modern pentru toate inputurile */
+.form-control {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background-color: white;
+    color: #1a202c;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    line-height: 1.5;
+    box-sizing: border-box;
+  }
+  
+  /* === Layout general === */
+.bg-white { background-color: #ffffff; }
+.text-gray-700 { color: #374151; }
+.text-blue-600 { color: #2563eb; }
+.text-red-500 { color: #ef4444; }
+.text-sm { font-size: 0.875rem; }
+.text-xl { font-size: 1.25rem; }
+.font-bold { font-weight: 700; }
+.mt-10 { margin-top: 2.5rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.p-6 { padding: 1.5rem; }
+.pt-4 { padding-top: 1rem; }
+.rounded { border-radius: 0.375rem; }
+.shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+.max-w-xl { max-width: 36rem; margin: 0 auto; }
+.text-center { text-align: center; }
+
+/* === Layout general === */
+.bg-white         { background-color: #ffffff; }
+.text-gray-700    { color: #374151; }
+.text-blue-600    { color: #2563eb; }
+.text-red-500     { color: #ef4444; }
+.text-sm          { font-size: 0.875rem; }
+.text-xl          { font-size: 1.25rem; }
+.font-bold        { font-weight: 700; }
+.mt-10            { margin-top: 2.5rem; }
+.mb-6             { margin-bottom: 1.5rem; }
+.p-6              { padding: 1.5rem; }
+.pt-4             { padding-top: 1rem; }
+.rounded          { border-radius: 0.375rem; }
+.shadow           { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+.max-w-xl         { max-width: 36rem; margin: 0 auto; }
+.text-center      { text-align: center; }
+.space-y-4 > * + * { margin-top: 1rem; }
+
+/* === Input styling universal (form-control) === */
+.form-control {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: white;
+  color: #1a202c;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+  appearance: none;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* === Select personalizat === */
+select.form-control {
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  cursor: pointer;
+}
+
+/* === Date picker stilizat === */
+input[type="date"].form-control::-webkit-calendar-picker-indicator {
+  filter: invert(40%);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+input[type="date"].form-control:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+/* === Butonul de submit === */
+.button-submit {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.button-submit:hover {
+  background-color: #15803d;
+}
+select.form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: white;
+    padding: 0.5rem 0.75rem;
+    padding-right: 2.5rem;
+    font-size: 0.875rem;
+    color: #1a202c;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.375rem;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  
+  select.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+    outline: none;
+  }
+  

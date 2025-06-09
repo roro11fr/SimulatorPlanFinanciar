@@ -1,17 +1,39 @@
-{% extends 'base.html' %}
-
-{% block title %}Înregistrare{% endblock %}
-
+{% extends "base.html" %}
+{% block title %}Înregistrare - Simulator Financiar{% endblock %}
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 shadow-md rounded mt-10">
-    <h2 class="text-2xl font-bold mb-6 text-center">Creează un cont</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Înregistrează-te</button>
+<div class="flex justify-center items-center min-h-[70vh] px-4">
+  <div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center text-blue-700 mb-6">Înregistrare</h2>
+
+    {% if form.errors %}
+      <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">Erori în formular.</div>
+    {% endif %}
+
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+            {{ field.label }}
+          </label>
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div>
+        <button type="submit"
+                class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+          Creează cont
+        </button>
+      </div>
     </form>
-    <p class="mt-4 text-center">
-        Ai deja cont? <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Autentifică-te</a>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+      Ai deja cont? <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Autentifică-te</a>
     </p>
+  </div>
 </div>
 {% endblock %}

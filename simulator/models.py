@@ -31,7 +31,7 @@ class InvestmentPlan(models.Model):
     payment_frequency = models.CharField(max_length=20, choices=PAYMENT_FREQUENCY_CHOICES)
     initial_investment = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Investiție Inițială")
     monthly_contribution = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Contribuție lunară")
-    risk_level = models.CharField(max_length=10, choices=RISK_LEVEL_CHOICES, verbose_name="Nivel de risc")
+    risk_level = models.CharField(max_length=10, choices=RISK_LEVEL_CHOICES, default='low', verbose_name="Nivel de risc")
     currency = models.CharField(max_length=5, choices=CURRENCY_CHOICES, default='RON', verbose_name="Monedă")
     start_date = models.DateField(verbose_name="Data Începerii")
     end_date = models.DateField(verbose_name="Data Finalizării")

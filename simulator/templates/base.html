@@ -1,48 +1,55 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Simulator Financiar{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Simulator Financiar{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
 
-    <!-- Navbar / Bara de navigare -->
-    <nav>
-        <div>
-            {% comment %} <a href="{% url 'profile' %}">Simulator Financiar</a> {% endcomment %}
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <!-- Stânga -->
+      <div class="flex items-center gap-4">
+        <h1 class="text-xl font-bold text-blue-600">Simulator Financiar</h1>
+        <a href="{% url 'dashboard' %}"
+           class="inline-block bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 shadow no-underline">
+          🏠 Acasă
+        </a>
+      </div>
 
-           <!-- Verificăm dacă utilizatorul este autentificat -->
-            {% if user.is_authenticated %}
-            <div>
-                <span>Bun venit, {{ user.username }}!</span>
-                <!-- Formular POST pentru logout -->
-                <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Logout</button>
-                </form>
-            </div>
-            {% else %}
-            <div>
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}">Register</a>
-            </div>
-            {% endif %}
-            </div>
-    </nav>
+      <!-- Dreapta -->
+      <div class="flex items-center gap-4">
+        {% if user.is_authenticated %}
+          <span class="text-sm">Bun venit, <strong>{{ user.username }}</strong>!</span>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit"
+                    class="text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow">
+              Logout
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="text-blue-600 hover:underline text-sm">Login</a>
+          <a href="{% url 'register' %}" class="text-blue-600 hover:underline text-sm">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
 
-    <!-- Content Area -->
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+  <!-- Conținut principal -->
+  <main class="container mx-auto px-4 py-8 flex-grow">
+    {% block content %}{% endblock %}
+  </main>
 
-    <!-- Footer -->
-    <footer>
-        <div>
-            <p>&copy; 2025 Simulator Financiar. Toate drepturile rezervate.</p>
-        </div>
-    </footer>
+  <!-- Footer -->
+  <footer class="text-center text-sm text-gray-600 py-6 border-t border-gray-300 mt-4">
+    © 2025 Simulator Financiar. Toate drepturile rezervate.
+  </footer>
 
 </body>
 </html>

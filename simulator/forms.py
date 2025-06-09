@@ -41,12 +41,17 @@ class InvestmentPlanForm(forms.ModelForm):
             'monthly_income': 'Venit lunar',
         }
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'type': 'date'}),
-            'plan_type': forms.Select(),
-            'payment_frequency': forms.Select(),
-            'risk_level': forms.Select(),
-            'currency': forms.Select(),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'plan_type': forms.Select(attrs={'class': 'form-control'}),
+            'payment_frequency': forms.Select(attrs={'class': 'form-control'}),
+            'initial_investment': forms.NumberInput(attrs={'class': 'form-control'}),
+            'monthly_contribution': forms.NumberInput(attrs={'class': 'form-control'}),
+            'risk_level': forms.Select(attrs={'class': 'form-control'}),
+            'currency': forms.Select(attrs={'class': 'form-control'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'monthly_expense': forms.NumberInput(attrs={'class': 'form-control'}),
+            'monthly_income': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
     def clean(self):
