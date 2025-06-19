@@ -13,76 +13,141 @@ from django.contrib.auth.decorators import login_required
 from simulator.models import Simulation, InvestmentPlan
 from simulator.utils import get_historical_data
 
+from fredapi import Fred
+import pandas as pd
+from decimal import Decimal
+
+def get_historical_inflation(api_key: str) -> pd.Series:
+    """
+    Returnează inflația anuală reală (YOY) din FRED pentru perioada fixă 1994–2023.
+    """
+    fred = Fred(api_key=api_key)
+    cpi = fred.get_series('CPIAUCNS', observation_start="1993-12-01", observation_end="2023-12-31")
+
+    cpi.index = pd.to_datetime(cpi.index)
+    cpi_annual = cpi.to_frame(name="CPI").resample('YE').last()
+    inflation = cpi_annual.pct_change().dropna()
+
+    if inflation.empty:
+        raise ValueError("Inflația istorică nu a putut fi calculată.")
+
+    return inflation.squeeze()
+# ======================================
+# Simulare Monte Carlo
+# ======================================
+
 
 def monte_carlo_simulation_with_historical_data(
     initial, monthly, expense, income,
     years=30, simulations=500,
-    symbol="^GSPC", start_date="2010-01-01", end_date="2025-01-01",
-    risk_level="medium"):
+    symbol="^GSPC", start_date="1994-01-01", end_date="2024-12-31",
+    api_key=None):
 
+    if api_key is None:
+        raise ValueError("Trebuie să furnizezi api_key pentru FRED.")
+
+    # Conversii
+    initial = float(initial)
+    monthly = float(monthly)
+    expense = float(expense)
+    income = float(income)
+
+    # Date istorice
     historical_data = get_historical_data(symbol, start_date, end_date)
-
-    if ('Close', symbol) in historical_data.columns:
-        historical_data['Daily Return'] = historical_data[('Close', symbol)].pct_change()
-    else:
+    if ('Close', symbol) not in historical_data.columns:
         raise ValueError("Nu am găsit o coloană 'Close' în datele istorice")
 
-    # ✅ Calcul corect al randamentelor anuale compuse
-    annual_returns = historical_data['Daily Return'].resample('YE').apply(lambda x: (1 + x).prod() - 1)
-
-    # 📊 DEBUG – Statistici despre randamente
-    print("========== DEBUG: Randamente anuale compuse ==========")
-    print(annual_returns.describe())
-    print("======================================================")
-
-    mean_return = annual_returns.mean()
-    std_dev = annual_returns.std()
-
-    print(f"[DEBUG] Media randamentelor anuale (mean): {mean_return:.4f}")
-    print(f"[DEBUG] Deviația standard anuală (std): {std_dev:.4f}")
-
-    # Definim șocurile bazate pe nivelul de risc
-    if risk_level == "low":
-        shock_neg = -0.03  # -3%
-        shock_pos = 0.02   # +2%
-        shock_prob = 0.05  # 5% șansă de șoc
-    elif risk_level == "medium":
-        shock_neg = -0.05  # -5%
-        shock_pos = 0.03   # +3%
-        shock_prob = 0.10  # 10% șansă de șoc
-    else:  # high
-        shock_neg = -0.08  # -8%
-        shock_pos = 0.05   # +5%
-        shock_prob = 0.15  # 15% șansă de șoc
+    historical_data['Daily Return'] = historical_data[('Close', symbol)].pct_change()
+    annual_returns = historical_data['Daily Return'].resample('Y').apply(lambda x: (1 + x).prod() - 1).dropna().values
+    inflation_series = get_historical_inflation(api_key).dropna().values
 
     results = []
+
     for _ in range(simulations):
         value = initial
         scenario = []
+
         annual_expense = expense * 12
         annual_contribution = monthly * 12
         annual_income = income * 12
 
+        sampled_inflation = [random.choice(inflation_series) for _ in range(years)]
+        sampled_returns = [random.choice(annual_returns) for _ in range(years)]
+
         for year in range(years):
-            # Generate random inflation for this year
-            inflation = np.random.normal(0.03, 0.01)
-            
-            current_expense = annual_expense * (1 + inflation) ** year
-            current_contribution = annual_contribution * (1 + inflation) ** year
-            current_income = annual_income * (1.02) ** year
+            shock = sampled_returns[year]
+            inf_cumul = np.prod([1 + sampled_inflation[i] for i in range(year + 1)])
 
-            # cashflow = (current_income - current_expense - current_contribution)
-            shock = np.random.normal(mean_return, std_dev)
+            current_expense = annual_expense * inf_cumul
+            current_contribution = annual_contribution * inf_cumul
+            current_income = annual_income * inf_cumul
 
-            # Aplicăm șocurile bazate pe probabilitate și nivelul de risc
-            if random.random() < shock_prob:
-                # 50% șansă pentru șoc pozitiv sau negativ
-                if random.random() < 0.5:
-                    shock = shock_pos
-                else:
-                    shock = shock_neg
+            value = (value + current_contribution) * (1 + shock)
+            scenario.append(value)
 
-            # ✅ Actualizare valoare corectă
+        results.append(scenario)
+
+    return np.array(results)
+
+
+def monte_carlo_normal(
+    initial, monthly, expense, income,
+    years=30, simulations=500,
+    mean_return=0.07, std_dev=0.15):
+
+    initial = float(initial)
+    monthly = float(monthly)
+    expense = float(expense)
+    income = float(income)
+
+    results = []
+
+    for _ in range(simulations):
+        value = initial
+        scenario = []
+
+        annual_contribution = monthly * 12
+
+        for year in range(years):
+            shock = np.random.normal(loc=mean_return, scale=std_dev)
+            inflation = np.random.normal(0.025, 0.01)
+            inf_cumul = (1 + inflation) ** year
+
+            current_contribution = annual_contribution * inf_cumul
+            value = (value + current_contribution) * (1 + shock)
+            scenario.append(value)
+
+        results.append(scenario)
+
+    return np.array(results)
+
+
+
+def monte_carlo_gbm(
+    initial, monthly, expense, income,
+    years=30, simulations=500,
+    mean_return=0.07, std_dev=0.15):
+
+    initial = float(initial)
+    monthly = float(monthly)
+    expense = float(expense)
+    income = float(income)
+
+    results = []
+
+    for _ in range(simulations):
+        value = initial
+        scenario = []
+
+        annual_contribution = monthly * 12
+
+        for year in range(years):
+            Z = np.random.normal()
+            shock = np.exp((mean_return - 0.5 * std_dev ** 2) + std_dev * Z) - 1
+            inflation = np.random.normal(0.025, 0.01)
+            inf_cumul = (1 + inflation) ** year
+
+            current_contribution = annual_contribution * inf_cumul
             value = (value + current_contribution) * (1 + shock)
             scenario.append(value)
 
@@ -133,6 +198,45 @@ def plot_simulation_as_html(scenarios, annual_contribution, initial=0):
 
     return fig.to_html(full_html=False, include_plotlyjs='cdn')
 
+def run_all_simulations_and_compare(plan, years, symbol, start_date, end_date, api_key):
+    methods = {}
+
+    # Bootstrapping
+    scenarios_boot = monte_carlo_simulation_with_historical_data(
+        initial=plan.initial_investment,
+        monthly=plan.monthly_contribution,
+        expense=plan.monthly_expense,
+        income=plan.monthly_income,
+        years=years, simulations=500,
+        symbol=symbol,
+        start_date=start_date,
+        end_date=end_date,
+        api_key=api_key
+    )
+    methods["Bootstrapping"] = (scenarios_boot, evaluate_monte_carlo_error(scenarios_boot))
+
+    # Normal
+    scenarios_norm = monte_carlo_normal(
+        initial=plan.initial_investment,
+        monthly=plan.monthly_contribution,
+        expense=plan.monthly_expense,
+        income=plan.monthly_income,
+        years=years, simulations=500
+    )
+    methods["Normal"] = (scenarios_norm, evaluate_monte_carlo_error(scenarios_norm))
+
+    # GBM
+    scenarios_gbm = monte_carlo_gbm(
+        initial=plan.initial_investment,
+        monthly=plan.monthly_contribution,
+        expense=plan.monthly_expense,
+        income=plan.monthly_income,
+        years=years, simulations=500
+    )
+    methods["GBM"] = (scenarios_gbm, evaluate_monte_carlo_error(scenarios_gbm))
+
+    return methods
+
 
 def start_simulation(request, plan_id):
     plan = get_object_or_404(InvestmentPlan, id=plan_id, user=request.user)
@@ -144,23 +248,40 @@ def start_simulation(request, plan_id):
     symbol = "^GSPC"
     start_date = start.strftime("%Y-%m-%d")
     end_date = end.strftime("%Y-%m-%d")
+    fred_api_key = settings.FRED_API_KEY
 
-    scenarios = monte_carlo_simulation_with_historical_data(
-        float(plan.initial_investment),
-        float(plan.monthly_contribution),
-        float(plan.monthly_expense),
-        float(plan.monthly_income),
-        years=years,
-        simulations=500,
-        symbol=symbol,
-        start_date=start_date,
-        end_date=end_date,
-        risk_level=plan.risk_level
-    )
+    # Rulăm toate cele 3 simulări și comparăm
+    methods = run_all_simulations_and_compare(plan, years, symbol, start_date, end_date, fred_api_key)
 
+    print("\n=========== COMPARAȚIE ERORI MONTE CARLO ===========")
+    for name, (scenarios, metrics) in methods.items():
+        mean = metrics["mean"]
+        std = metrics["std_dev"]
+        se = metrics["standard_error"]
+        ci_low, ci_high = metrics["confidence_interval_95"]
+
+        std_pct = (std / mean) * 100
+        se_pct = (se / mean) * 100
+        ci_pct = ((ci_high - mean) / mean) * 100
+
+        print(f"🔸 {name}")
+        print(f"   Medie finală: {mean:,.2f} RON")
+        print(f"   Std Dev: {std:,.2f} RON ({std_pct:.2f}%)")
+        print(f"   SE: {se:,.2f} RON ({se_pct:.2f}%)")
+        print(f"   CI 95%: [{ci_low:,.2f} ... {ci_high:,.2f}] (±{ci_pct:.2f}%)")
+        print("-----------------------------------------------------")
+
+    # 🏆 Alege metoda cu cea mai mică eroare standard
+    best_method = min(methods.items(), key=lambda x: x[1][1]['standard_error'])
+    best_name, (best_scenarios, best_metrics) = best_method
+
+    print(f" ***Metoda optimă: {best_name}")
+
+    # Pregătim graficul pentru metoda câștigătoare
     annual_contribution = float(plan.monthly_contribution) * 12
-    chart_html = plot_simulation_as_html(scenarios, annual_contribution, initial=float(plan.initial_investment))
+    chart_html = plot_simulation_as_html(best_scenarios, annual_contribution, initial=float(plan.initial_investment))
 
+    # Salvăm doar rezultatul final + metoda aleasă
     sim = Simulation.objects.create(
         investment_plan=plan,
         user=request.user,
@@ -174,8 +295,10 @@ def start_simulation(request, plan_id):
     return render(request, 'simulator/simulare_resultate.html', {
         'plan': plan,
         'simulare': sim,
-        'chart_html': chart_html
+        'chart_html': chart_html,
+        'metoda_aleasa': best_name
     })
+
 
 
 @login_required
@@ -203,3 +326,28 @@ def sterge_simulare(request, simulare_id):
     simulare.delete()
 
     return redirect('istoric_simulari', plan_id=plan_id)
+
+
+def evaluate_monte_carlo_error(scenarios: np.ndarray) -> dict:
+    """
+    Calculează erorile estimării Monte Carlo:
+    - media valorii finale
+    - deviația standard
+    - standard error (SE)
+    - interval de încredere 95%
+    """
+    final_values = scenarios[:, -1]
+    n = len(final_values)
+
+    mean_final = np.mean(final_values)
+    std_final = np.std(final_values)
+    se_final = std_final / np.sqrt(n)
+    ci_lower = mean_final - 1.96 * se_final
+    ci_upper = mean_final + 1.96 * se_final
+
+    return {
+        "mean": mean_final,
+        "std_dev": std_final,
+        "standard_error": se_final,
+        "confidence_interval_95": (ci_lower, ci_upper)
+    }
