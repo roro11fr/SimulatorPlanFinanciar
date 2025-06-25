@@ -13,67 +13,94 @@
 <p><strong>Index bursier:</strong> {{ simulare.investment_plan.get_stock_index_display }}</p>
 <p><strong>Ani:</strong> {{ simulare.years }}</p>
 
-{% comment %} <!-- Afișează doar cardul asociat cu nivelul de risc -->
-<div class="row mt-4 mb-4">
-  {% if simulare.risk_level == "low" %}
-    <div class="col-md-12">
-      <div class="card border-success">
-        <div class="card-body">
-          <h5 class="card-title">
-            🟢 Risc Scăzut
-          </h5>
-          <p class="card-text">
-            Portofoliu conservator, concentrat pe stabilitate și siguranță.
-            Randamente mai mici dar constante, ideal pentru investiții pe termen lung cu focus pe păstrarea capitalului.
-          </p>
-        </div>
+<hr>
+
+<h3>📊 Compararea metodelor de simulare</h3>
+<p>Afișăm evoluția portofoliului folosind trei metode Monte Carlo. Scopul este să vedem care dintre ele oferă cel mai echilibrat raport între <strong>randament estimat</strong> și <strong>stabilitate (incertitudine)</strong>.</p>
+
+<div class="alert alert-info mb-4">
+  <h5>📘 Cum se interpretează graficele:</h5>
+  <ul>
+    <li><strong>🔵 Linia albastră:</strong> valoarea medie estimată a portofoliului în timp (media a 500 de simulări)</li>
+    <li><strong>🟩 Linia verde întreruptă:</strong> suma totală investită de utilizator (contribuții lunare)</li>
+    <li><strong>🔷 Zona albastră:</strong> interval în care se află 80% dintre simulări (10–90%) – arată riscurile</li>
+  </ul>
+ <p><strong>ℹ️ Observație:</strong><br>
+Cu cât <strong>linia albastră</strong> (valoarea simulată) se află mai sus față de <strong>linia verde</strong> (contribuțiile totale), cu atât simularea indică un <u>profit estimat mai mare</u>.<br>
+În același timp, cu cât <strong>zona albastră</strong> (intervalul 10–90%) este <u>mai îngustă</u>, cu atât rezultatul este considerat <u>mai stabil și predictibil</u>, adică riscul estimat este mai mic.
+</p>
+{% for metoda, grafic in chart_htmls.items %}
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title">
+        {% if metoda == metoda_aleasa %}
+          ⭐ <strong>{{ metoda }} (Metoda aleasă)</strong>
+        {% else %}
+          {{ metoda }}
+        {% endif %}
+      </h4>
+
+      <p class="text-muted" style="font-style: italic;">
+        {% if metoda == "Bootstrapping" %}
+          Bazată pe randamente istorice reale (ex. S&P 500). Reproduce comportamentul trecut al pieței pentru a estima viitorul.
+        {% elif metoda == "Clasic" %}
+          Utilizează o distribuție normală (medie și deviație standard fixă) pentru a genera randamente anuale ipotetice.
+        {% elif metoda == "GBM" %}
+          Aplică modelul Geometric Brownian Motion, folosit frecvent în finanțe, pentru a simula evoluții ale pieței cu volatilitate controlată.
+        {% else %}
+          Simulare personalizată.
+        {% endif %}
+      </p>
+
+      <div class="interactive-plot mb-4">
+        {{ grafic|safe }}
       </div>
     </div>
-  {% elif simulare.risk_level == "medium" %}
-    <div class="col-md-12">
-      <div class="card border-warning">
-        <div class="card-body">
-          <h5 class="card-title">
-            🔵 Risc Mediu
-          </h5>
-          <p class="card-text">
-            Echilibru între risc și randament. Portofoliu diversificat care combină stabilitatea cu oportunități de creștere. Ideal pentru investitori care caută creștere moderată.
-          </p>
-        </div>
-      </div>
-    </div>
-  {% elif simulare.risk_level == "high" %}
-    <div class="col-md-12">
-      <div class="card border-danger">
-        <div class="card-body">
-          <h5 class="card-title">
-            🔴 Risc Ridicat
-          </h5>
-          <p class="card-text">
-            Strategie agresivă, concentrată pe maximizarea randamentelor.
-            Volatilitate ridicată dar cu potențial de profit major. Recomandat pentru investitori cu toleranță mare la risc.
-          </p>
-        </div>
-      </div>
-    </div>
-  {% endif %}
-</div> {% endcomment %}
+  </div>
+{% endfor %}
+
 
 <hr>
 
-<div class="interactive-plot">
-  {{ chart_html|safe }}
+<h3>Ce trebuie să înțelegi din aceste grafice?</h3>
+<p>
+  Fiecare metodă simulează în mod diferit viitorul portofoliului tău. Unele se bazează pe date istorice reale (Bootstrapping), altele pe modele statistice teoretice (Clasic, GBM).
+</p>
+<p>
+  Metoda marcată cu <strong>⭐</strong> a fost aleasă automat deoarece oferă <strong>cea mai mică eroare standard</strong> – adică prezice viitorul cu <strong>cea mai mare stabilitate statistică</strong>. Asta înseamnă că este cea mai <u>fiabilă</u> dintre cele testate.
+</p>
+<p>
+  Dacă randamentul estimat e puțin mai mic, dar vine cu o incertitudine semnificativ redusă, metoda este considerată mai „sigură” pentru tine ca investitor.
+</p>
 
-  <div class="mt-4" style="padding: 1rem; border: 1px solid #ccc; border-radius: 6px; background-color: #f9f9f9;">
-    <h4>📘 Cum să interpretezi graficul:</h4>
-    <ul style="list-style: disc; padding-left: 1.5rem;">
-      <li><strong>🔵 Linia albastră</strong> arată <u>valoarea medie</u> a portofoliului în 500 de simulări.</li>
-      <li><strong>🟩 Linia verde întreruptă</strong> arată <u>contribuțiile totale</u> investite lunar.</li>
-      <li><strong>🔷 Banda albastră deschisă</strong> arată intervalul în care se află 80% din simulări (10%–90%).</li>
-    </ul>
-    <p style="margin-top: 1rem;"><strong>ℹ️ Notă:</strong> Este normal ca portofoliul să fie uneori sub contribuții, mai ales în condiții de risc și volatilitate.</p>
-  </div>
-</div>
+<hr>
+
+<h3>Caz de utilizator: Tu, investitorul</h3>
+<p>
+  Ai decis să investești într-un plan financiar pe termen lung. Pe baza informațiilor oferite:
+</p>
+
+<ul>
+  <li><strong>Investiție inițială:</strong> {{ simulare.initial_investment|floatformat:2 }} RON</li>
+  <li><strong>Contribuții lunare:</strong> {{ simulare.investment_plan.monthly_contribution|floatformat:2 }} RON</li>
+  <li><strong>Index bursier ales:</strong> {{ simulare.investment_plan.get_stock_index_display }}</li>
+  <li><strong>Durata simulării:</strong> {{ simulare.years }} ani</li>
+  <li><strong>Număr simulări:</strong> {{ simulare.simulations_run }}</li>
+</ul>
+
+<p>
+  După analizarea rezultatelor generate de cele trei metode, sistemul a ales automat <strong>{{ metoda_aleasa }}</strong> deoarece aceasta a avut cea mai mică eroare standard.
+</p>
+
+<p>
+  Acest lucru înseamnă că, statistic, metoda <strong>{{ metoda_aleasa }}</strong> oferă cea mai stabilă estimare a portofoliului tău viitor. Ea reduce incertitudinea și îți permite să iei o decizie informată, în funcție de profilul tău de risc.
+</p>
+
+<p>
+  De exemplu, dacă linia albastră (valoarea simulată) rămâne peste linia verde (contribuțiile tale totale), înseamnă că ai șanse mari de profit. Zona albastră lată înseamnă risc; zona îngustă înseamnă stabilitate.
+</p>
+
+<p><strong>🔍 Concluzie personalizată:</strong> Pe baza datelor introduse, ai acum o viziune clară asupra evoluției posibile a planului tău de investiții, folosind metoda aleasă automat. Poți păstra simularea, o poți compara cu altele sau poți ajusta parametrii pentru alte scenarii.</p
 
 <hr>
 
@@ -82,22 +109,15 @@
   <a href="{% url 'dashboard' %}" class="btn btn-primary">Înapoi la dashboard</a>
 </div>
 
-{% if simulare.result_data %}
-  <h3>Date Rezultate</h3>
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Perioadă</th>
-        <th>Valoare Finală</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for data in simulare.result_data %}
-        <tr>
-          <td>{{ data.period }}</td>
-          <td>{{ data.final_value }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+{% if simulare.result_image_path %}
+  <div class="mt-5">
+    <h3>📷 Graficul salvat</h3>
+    <img src="{{ MEDIA_URL }}{{ simulare.result_image_path }}" alt="Graficul rezultatului simulării" class="img-fluid">
+  </div>
+{% endif %}
+
+{% if simulare.error_message %}
+  <div class="alert alert-danger mt-4">
+    <strong>⚠️ Eroare:</strong> {{ simulare.error_message }}
+  </div>
 {% endif %}

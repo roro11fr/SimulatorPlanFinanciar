@@ -90,7 +90,7 @@ def monte_carlo_simulation_with_historical_data(
     return np.array(results)
 
 
-def monte_carlo_normal(
+def monte_carlo_clasic(
     initial, monthly, expense, income,
     years=30, simulations=500,
     mean_return=0.07, std_dev=0.15):
@@ -215,15 +215,15 @@ def run_all_simulations_and_compare(plan, years, symbol, start_date, end_date, a
     )
     methods["Bootstrapping"] = (scenarios_boot, evaluate_monte_carlo_error(scenarios_boot))
 
-    # Normal
-    scenarios_norm = monte_carlo_normal(
+    # Clasic
+    scenarios_norm = monte_carlo_clasic(
         initial=plan.initial_investment,
         monthly=plan.monthly_contribution,
         expense=plan.monthly_expense,
         income=plan.monthly_income,
         years=years, simulations=500
     )
-    methods["Normal"] = (scenarios_norm, evaluate_monte_carlo_error(scenarios_norm))
+    methods["Clasic"] = (scenarios_norm, evaluate_monte_carlo_error(scenarios_norm))
 
     # GBM
     scenarios_gbm = monte_carlo_gbm(
@@ -271,15 +271,21 @@ def start_simulation(request, plan_id):
         print(f"   CI 95%: [{ci_low:,.2f} ... {ci_high:,.2f}] (±{ci_pct:.2f}%)")
         print("-----------------------------------------------------")
 
-    # 🏆 Alege metoda cu cea mai mică eroare standard
-    best_method = min(methods.items(), key=lambda x: x[1][1]['standard_error'])
-    best_name, (best_scenarios, best_metrics) = best_method
-
-    print(f" ***Metoda optimă: {best_name}")
-
-    # Pregătim graficul pentru metoda câștigătoare
+    
+    chart_htmls = {}
     annual_contribution = float(plan.monthly_contribution) * 12
-    chart_html = plot_simulation_as_html(best_scenarios, annual_contribution, initial=float(plan.initial_investment))
+    initial = float(plan.initial_investment)
+
+    for name, (scenarios, metrics) in methods.items():
+        chart_htmls[name] = plot_simulation_as_html(
+            scenarios,
+            annual_contribution=annual_contribution,
+            initial=initial
+        )
+
+    # alegem și metoda cu eroarea standard cea mai mică
+    best_method = min(methods.items(), key=lambda x: x[1][1]['standard_error'])
+    best_name = best_method[0]
 
     # Salvăm doar rezultatul final + metoda aleasă
     sim = Simulation.objects.create(
@@ -294,7 +300,7 @@ def start_simulation(request, plan_id):
     return render(request, 'simulator/simulare_resultate.html', {
         'plan': plan,
         'simulare': sim,
-        'chart_html': chart_html,
+        'chart_htmls': chart_htmls,
         'metoda_aleasa': best_name
     })
 
