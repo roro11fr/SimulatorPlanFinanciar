@@ -57,8 +57,8 @@ def monte_carlo_simulation_with_historical_data(
     if ('Close', symbol) not in historical_data.columns:
         raise ValueError("Nu am găsit o coloană 'Close' în datele istorice")
 
-    historical_data['Daily Return'] = historical_data[('Close', symbol)].pct_change()
-    annual_returns = historical_data['Daily Return'].resample('Y').apply(lambda x: (1 + x).prod() - 1).dropna().values
+    historical_data['Daily Return'] = historical_data['Close'].pct_change()
+    annual_returns = historical_data['Daily Return'].resample('YE').apply(lambda x: (1 + x).prod() - 1).dropna().values
     inflation_series = get_historical_inflation(api_key).dropna().values
 
     results = []
@@ -245,7 +245,7 @@ def start_simulation(request, plan_id):
     end = plan.end_date
     years = (end - start).days // 365
 
-    symbol = "^GSPC"
+    symbol = plan.stock_index
     start_date = start.strftime("%Y-%m-%d")
     end_date = end.strftime("%Y-%m-%d")
     fred_api_key = settings.FRED_API_KEY
@@ -286,7 +286,6 @@ def start_simulation(request, plan_id):
         investment_plan=plan,
         user=request.user,
         initial_investment=plan.initial_investment,
-        risk_level=plan.risk_level,
         years=years,
         result_image_path="",
         simulations_run=500

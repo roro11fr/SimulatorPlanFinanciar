@@ -10,10 +10,10 @@
 <p><strong>Contribuții lunare:</strong> {{ simulare.investment_plan.monthly_contribution }} RON</p>
 {% endif %}
 
-<p><strong>Risc:</strong> {{ simulare.risk_level }}</p>
+<p><strong>Index bursier:</strong> {{ simulare.investment_plan.get_stock_index_display }}</p>
 <p><strong>Ani:</strong> {{ simulare.years }}</p>
 
-<!-- Afișează doar cardul asociat cu nivelul de risc -->
+{% comment %} <!-- Afișează doar cardul asociat cu nivelul de risc -->
 <div class="row mt-4 mb-4">
   {% if simulare.risk_level == "low" %}
     <div class="col-md-12">
@@ -57,7 +57,7 @@
       </div>
     </div>
   {% endif %}
-</div>
+</div> {% endcomment %}
 
 <hr>
 

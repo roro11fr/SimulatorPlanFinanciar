@@ -23,17 +23,16 @@ class InvestmentPlanForm(forms.ModelForm):
     class Meta:
         model = InvestmentPlan
         fields = [
-            'name', 'plan_type', 'payment_frequency', 'initial_investment',
-            'monthly_contribution', 'risk_level', 'currency', 'start_date', 'end_date',
+            'name', 'stock_index', 'payment_frequency', 'initial_investment',
+            'monthly_contribution', 'currency', 'start_date', 'end_date',
             'monthly_expense', 'monthly_income'
         ]
         labels = {
             'name': 'Numele Planului',
-            'plan_type': 'Tipul Planului',
+            'stock_index': 'Indexul bursier',
             'payment_frequency': 'Frecventa Contributiilor',
             'initial_investment': 'Investitie Initială',
             'monthly_contribution': 'Contributie lunară',
-            'risk_level': 'Nivel de risc',
             'currency': 'Monedă',
             'start_date': 'Data Începerii',
             'end_date': 'Data Finalizării',
@@ -41,12 +40,11 @@ class InvestmentPlanForm(forms.ModelForm):
             'monthly_income': 'Venit lunar',
         }
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'plan_type': forms.Select(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),    
+            'stock_index': forms.Select(attrs={'class': 'form-control'}),
             'payment_frequency': forms.Select(attrs={'class': 'form-control'}),
             'initial_investment': forms.NumberInput(attrs={'class': 'form-control'}),
             'monthly_contribution': forms.NumberInput(attrs={'class': 'form-control'}),
-            'risk_level': forms.Select(attrs={'class': 'form-control'}),
             'currency': forms.Select(attrs={'class': 'form-control'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
@@ -76,4 +74,4 @@ class InvestmentPlanForm(forms.ModelForm):
 class SimulationForm(forms.ModelForm):
     class Meta:
         model = Simulation
-        fields = ['initial_investment', 'risk_level', 'years', 'simulations_run']
+        fields = ['initial_investment', 'years', 'simulations_run']

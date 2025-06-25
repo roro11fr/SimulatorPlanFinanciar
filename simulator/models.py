@@ -1,10 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+STOCK_INDEX_INFO = {
+    "^GSPC": ("S&P 500", "USA, 500 companii mari"),
+    "^NDX": ("NASDAQ 100", "USA, companii tech"),
+    "^DJI": ("Dow Jones", "USA, 30 companii blue chip"),
+    "^FTSE": ("FTSE 100", "UK, companii britanice"),
+    "^GDAXI": ("DAX", "Germania, 40 companii mari"),
+    "^FCHI": ("CAC 40", "Franța"),
+    "^N225": ("Nikkei 225", "Japonia"),
+    "^HSI": ("Hang Seng", "Hong Kong"),
+    "000001.SS": ("Shanghai Composite", "China"),
+    "^BVSP": ("Bovespa", "Brazilia"),
+}
+
+STOCK_INDEX_CHOICES = [(k, f"{v[0]} – {v[1]}") for k, v in STOCK_INDEX_INFO.items()]
+
+
 class InvestmentPlan(models.Model):
-    PLAN_TYPE_CHOICES = [
-        ('investitii', 'Plan de Investiții'),
-    ]
 
     PAYMENT_FREQUENCY_CHOICES = [
         ('monthly', 'Lunar'),
@@ -24,14 +38,12 @@ class InvestmentPlan(models.Model):
         ('EUR', 'EUR'),
         ('USD', 'USD'),
     ]
-
     user = models.ForeignKey(User, related_name="investment_plans", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, verbose_name="Numele Planului")
-    plan_type = models.CharField(max_length=20, choices=PLAN_TYPE_CHOICES, default='investitii')
+    stock_index = models.CharField(max_length=20, choices=STOCK_INDEX_CHOICES, default="^GSPC")
     payment_frequency = models.CharField(max_length=20, default='monthly', choices=PAYMENT_FREQUENCY_CHOICES)
     initial_investment = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Investiție Inițială")
     monthly_contribution = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Contribuție lunară")
-    risk_level = models.CharField(max_length=10, choices=RISK_LEVEL_CHOICES, default='low', verbose_name="Nivel de risc")
     currency = models.CharField(max_length=5, choices=CURRENCY_CHOICES, default='RON', verbose_name="Monedă")
     start_date = models.DateField(verbose_name="Data Începerii")
     end_date = models.DateField(verbose_name="Data Finalizării")
@@ -48,7 +60,6 @@ class Simulation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     initial_investment = models.DecimalField(max_digits=12, decimal_places=2)
-    risk_level = models.CharField(max_length=10, choices=InvestmentPlan.RISK_LEVEL_CHOICES, default='low', verbose_name="Nivel de risc")
     years = models.PositiveIntegerField()
     simulations_run = models.PositiveIntegerField(default=500)
 

@@ -16,7 +16,6 @@
           <div class="text-sm text-gray-700 space-y-1 mb-4">
             <p><span class="font-semibold">Data:</span> {{ sim.created_at }}</p>
             <p><span class="font-semibold">Investiție:</span> {{ sim.initial_investment }} RON</p>
-            <p><span class="font-semibold">Nivel risc:</span> 
               <span class="{% if sim.risk_level == 'low' %}text-green-700{% elif sim.risk_level == 'medium' %}text-yellow-700{% else %}text-red-700{% endif %} font-semibold">
                 {{ sim.risk_level|title }}
               </span>

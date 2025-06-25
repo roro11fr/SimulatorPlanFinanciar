@@ -15,7 +15,7 @@
           <tr>
             <th class="px-4 py-2 border-b">Data</th>
             <th class="px-4 py-2 border-b">Investiție</th>
-            <th class="px-4 py-2 border-b">Risc</th>
+            <th class="px-4 py-2 border-b">Indicele bursier</th>
             <th class="px-4 py-2 border-b text-center">Grafic</th>
             <th class="px-4 py-2 border-b text-center">Acțiuni</th>
           </tr>
@@ -25,11 +25,7 @@
             <tr class="hover:bg-gray-50">
               <td class="px-4 py-2 border-b">{{ sim.created_at }}</td>
               <td class="px-4 py-2 border-b">{{ sim.initial_investment }} RON</td>
-              <td class="px-4 py-2 border-b">
-                <span class="font-medium {% if sim.risk_level == 'low' %}text-green-700{% elif sim.risk_level == 'medium' %}text-yellow-700{% else %}text-red-700{% endif %}">
-                    {{sim.get_risk_level_display}}
-                </span>
-              </td>
+              <td class="px-4 py-2 border-b">{{ plan.get_stock_index_display }}</td>  {# <-- afișare #}
               <td class="px-4 py-2 border-b text-center">
                 <a href="{{ MEDIA_URL }}{{ simulare.result_image_path }}" target="_blank">📈 Vezi Graficul</a>
               </td>
